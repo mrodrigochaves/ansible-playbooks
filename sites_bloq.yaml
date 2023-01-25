@@ -1,0 +1,39 @@
+---
+- name: Block pornographic sites on Windows
+  hosts: windows
+  gather_facts: no
+  vars:
+    sites_to_block:
+      - "*.pornhub.com"
+      - "*.xvideos.com"
+      - "*.youporn.com"
+      - "*.redtube.com"
+  tasks:
+    - name: Install the WebClient service
+      win_service:
+        name: WebClient
+        state: started
+
+    - name: Create a temporary folder for the host file
+      win_tempfile:
+        prefix: hosts
+        suffix: .txt
+        state: directory
+      register: temp_folder
+
+    - name: Download the current hosts file
+      win_get_url:
+        url: "file://{{ ansible_env.SystemRoot }}/System32/drivers/etc/hosts"
+        dest: "{{ temp_folder.path }}/hosts.txt"
+
+    - name: Add the blocked sites to the hosts file
+      lineinfile:
+        dest: "{{ temp_folder.path }}/hosts.txt"
+        regexp: "^{{ item }}"
+        line: "127.0.0.1 {{ item }}"
+      with_items: "{{ sites_to_block }}"
+
+    - name: Move the updated hosts file to the correct location
+      win_copy:
+        src: "{{ temp_folder.path }}/hosts.txt"
+        dest: "{{ ansible_env.SystemRoot }}/System32/drivers/etc/hosts"
