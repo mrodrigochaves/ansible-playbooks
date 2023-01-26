@@ -1,4 +1,3 @@
----
 - name: Criação de grupos e politicas na Oracle Cloud Infrastructure
   hosts: localhost
   collections:
@@ -12,7 +11,7 @@
     compute_group_name: "ComputeAdmin"
     redes_group_name: "RedesAdmin"
     dba_group_name: "DBAsAdmin"
-    cloudadm_group_name: "TCBCloudAdmin"
+    cloudadm_group_name: "mrCloudAdmin"
     operadores_group_name: "Operadores"
 
   tasks:
@@ -59,7 +58,7 @@
       - set_fact:
           dba_group_ocid: "{{ result.group.id }}"
 
-      # Criação do grupo TCBCloudAdmin
+      # Criação do grupo mrCloudAdmin
       - name: Criar um grupo que possui autorização em todos os recursos da Tenancy
         oci_identity_group:
           name: "{{ cloudadm_group_name }}"
@@ -115,10 +114,10 @@
       - set_fact:
           dba_policy_ocid: "{{ result.policy.id }}"
           
-      # Criação da Política TCBCloudAdminPolicy
-      - name: Atribuição da policy para o grupo TCBCloudAdmin
+      # Criação da Política mrCloudAdminPolicy
+      - name: Atribuição da policy para o grupo mrCloudAdmin
         oci_identity_policy:
-          name: "TCBCloudAdminPolicy"
+          name: "mrCloudAdminPolicy"
           compartment_id: "{{ parent_compartment_ocid }}"
           description: "Permissão para gerenciar todos os recursos na tenancy"
           statements: ["Allow group {{ cloudadm_group_name }} to manage all-resources in tenancy"]

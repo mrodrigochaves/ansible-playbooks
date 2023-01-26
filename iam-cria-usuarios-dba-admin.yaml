@@ -7,10 +7,10 @@
   vars:
     parent_compartment_ocid: "{{ lookup('env', 'PARENT_COMPARTMENT_OCID') }}"
     group_name: "DBAsAdmin"
-    dominio: "@thecloudbootcamp.com"
+    dominio: "@email.com"
     usuarios:
-      - bruno.silva
-      - zanon.brums
+      - user5
+      - user6
 
   tasks:
    - name: Valida pre-requisitos
@@ -29,5 +29,5 @@
        group_ocid: "{{ result.groups[0].id }}"
   
    - name: Cria usuários, adiciona em grupo e define senha
-     include_tasks: "tcb-bmc-iam-cria-usuarios.yaml"
+     include_tasks: "iam-cria-usuarios.yaml"
      loop: "{{ usuarios }}"
